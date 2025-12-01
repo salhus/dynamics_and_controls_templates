@@ -206,7 +206,7 @@ def animate_mass_spring(history, system, save_path=None):
     mass_block, = ax.plot([], [], 's', markersize=20, color='blue')
 
     def update(frame):
-        mass_block.set_data(x[frame], 0)
+        mass_block.set_data([x[frame]], [0])
         return mass_block,
 
     anim = FuncAnimation(fig, update, frames=len(x), interval=10, blit=True)
