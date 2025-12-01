@@ -35,6 +35,7 @@ def main():
             time.append(t)
             ref_previous = ref
         return time, d_reference
+    
 
     history = sim.run(x0=[0, 0],
                       dt = dt,
