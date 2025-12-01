@@ -25,7 +25,7 @@ def plot_tracking(history):
     ref = np.array(history['reference_signal'])
 
     xdot = np.array(history['state'])[:, 1]
-    refdot = 10*np.pi*(np.cos(5 * 2 * np.pi * t) + np.cos(5 * 2 * np.pi * t))
+    refdot =  np.array(history['reference_derivative'])
 
     plt.figure(figsize=(10, 4))
     plt.plot(t, x, label='Position x(t)')
@@ -68,7 +68,8 @@ def plot_tracking_error(history):
 
     # Reference signals
     ref = np.array(history["reference_signal"])
-    refdot = 10*np.pi*(np.cos(5 * 2 * np.pi * t) + np.cos(5 * 2 * np.pi * t))
+    refdot = np.array(history['reference_derivative'])
+
 
     # Absolute magnitude errors
     error = np.abs(np.abs(ref) - np.abs(x))
