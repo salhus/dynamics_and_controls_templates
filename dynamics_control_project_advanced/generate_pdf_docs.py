@@ -1,0 +1,153 @@
+import os
+
+report_dir = "report"
+os.makedirs(report_dir, exist_ok=True)
+
+tex_path = os.path.join(report_dir, "PROJECT_DOC.tex")
+pdf_path = os.path.join(report_dir, "PROJECT_DOC.pdf")
+
+tex_content = r"""
+\documentclass[a4paper,11pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{listings}
+\usepackage{color}
+\usepackage{graphicx}
+\usepackage{hyperref}
+
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegray},
+    keywordstyle=\color{blue},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=5pt,
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+\begin{document}
+
+\title{Dynamics \& Control Project Documentation}
+\author{}
+\date{\today}
+\maketitle
+
+
+\section*{1. Project Structure}
+
+\begin{verbatim}
++ systems/                 # Physical systems (Mass-Spring, Pendulum, Cart-Pole)
++ controllers/             # Controllers (PID, etc.)
++ simulation/              # Simulation & plotting
++ examples/                # Example scripts
++ report/                  # Generated PDFs & plots
++ requirements.txt
++ README.md
+\end{verbatim}
+
+
+\section*{2. Setup}
+
+\begin{lstlisting}[language=bash]
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r requirements.txt
+\end{lstlisting}
+
+\section*{3. Running Examples}
+
+\begin{lstlisting}[language=bash]
+python3 examples/run_mass_spring.py
+python3 examples/run_pendulum.py
+python3 -m examples.run_cart_pole_full
+\end{lstlisting}
+
+\section*{4. Systems}
+
+\begin{lstlisting}[language=python]
+from systems.cart_pole import CartPole
+system = CartPole(m_cart=1.0, m_pole=0.1, l=0.5, g=9.81)
+state_dot = system.dynamics(t=0.0, state=[0,0,0.1,0], u=0.0)
+\end{lstlisting}
+
+\section*{5. Controllers}
+
+\begin{lstlisting}[language=python]
+from controllers.pid import PID
+controller = PID(kp=100, ki=10, kd=20)
+u = controller.compute(error=0.5, dt=0.001)
+\end{lstlisting}
+
+\section*{6. Simulator}
+
+\begin{lstlisting}[language=python]
+from simulation.simulator import Simulator
+sim = Simulator(system, controller)
+history = sim.run(x0=[0,0,0.1,0], dt=0.001, tf=5.0, reference=0.0)
+\end{lstlisting}
+
+\section*{7. Plotting}
+
+\begin{lstlisting}[language=python]
+from simulation.plotting import plot_history
+plot_history(history, title="Cart-Pole Simulation", show=True, save_path="report/plot.png")
+\end{lstlisting}
+
+\section*{8. 3D Animation}
+
+\begin{lstlisting}[language=python]
+from simulation.animation_3d import animate_pendulum
+animate_pendulum(history, l=0.5)
+\end{lstlisting}
+
+\section*{9. PDF Report}
+
+\begin{lstlisting}[language=python]
+plot_history(history, show=False, save_path="report/cart_pole_plot.png")
+pdflatex -output-directory=report report.tex
+\end{lstlisting}
+
+\section*{10. Testing}
+
+Add tests in the \texttt{tests/} folder. Run with:
+
+\begin{lstlisting}[language=bash]
+pytest tests/
+\end{lstlisting}
+
+\section*{11. Extending Project}
+
+- New systems: implement \texttt{dynamics(t, state, u)}  
+- New controllers: inherit \texttt{Controller} and implement \texttt{compute(error, dt)}  
+- Extend plotting and animation as needed
+
+\section*{12. Dependencies}
+
+- numpy, scipy, matplotlib, sympy
+
+\end{document}
+"""
+
+# --- Save LaTeX file ---
+with open(tex_path, "w") as f:
+    f.write(tex_content)
+
+# --- Compile PDF using pdflatex ---
+os.system(f"pdflatex -output-directory={report_dir} {tex_path}")
+
+print(f"PDF documentation generated at {pdf_path}")
+
